@@ -16,8 +16,8 @@ public class Model extends JPanel implements ActionListener {
     private boolean inGame = false;
     private boolean dying = false;
 
-    private final int BLOCK_SIZE = 24;
-    private final int N_BLOCKS = 15;
+    private final int BLOCK_SIZE = 24;//size of block
+    private final int N_BLOCKS = 15;//number of block
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
     private final int MAX_GHOSTS = 12;
     private final int PACMAN_SPEED = 6;
@@ -27,7 +27,7 @@ public class Model extends JPanel implements ActionListener {
     private int[] dx, dy;
     private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
 
-
+    // image
     private Image heart, ghost;
     private Image up, down, left, right;
     private Image home, gameover;
@@ -55,6 +55,9 @@ public class Model extends JPanel implements ActionListener {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     };
 
+
+    // 0 = blue ,1 = left border , 2 = top border ,4 = right border , 8 bottom border , 16 white, 32 pink, 64 or ,128 add live ,256 score -10
+    //Frist map
     private final short levelData1[] = {
             19, 26, 26, 26, 26, 18, 26, 26, 26, 26, 26, 18, 26, 26, 22,
             21,  0,  0,  0,  0, 21,  0,  0,  0,  0,  0, 21,  0,  0, 21,
@@ -72,7 +75,7 @@ public class Model extends JPanel implements ActionListener {
             17, 18, 18, 18, 18, 16, 18, 256, 20,  0,  0,  0,  0, 17, 20,
             25, 24, 24, 24, 24, 24, 24, 24, 24, 26, 26, 26, 26, 24, 28,
     };
-
+    // Second map
     private final short levelData2[] = {
             19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
             17, 16, 16, 16, 16, 24, 16, 16, 128, 16, 16, 16, 16, 16, 20,
@@ -100,7 +103,6 @@ public class Model extends JPanel implements ActionListener {
     private Graphics2D g2d;
 
     public Model() {
-
         loadImages();
         initVariables();
         addKeyListener(new TAdapter());
@@ -108,7 +110,7 @@ public class Model extends JPanel implements ActionListener {
         initGame();
     }
 
-
+    //import picture
     private void loadImages() {
         down = new ImageIcon("./src/images/down.gif").getImage();
         up = new ImageIcon("./src/images/up.gif").getImage();
@@ -117,7 +119,6 @@ public class Model extends JPanel implements ActionListener {
         ghost = new ImageIcon("./src/images/ghost.gif").getImage();
         heart = new ImageIcon("./src/images/heart.png").getImage();
         home = new ImageIcon("./src/images/home.gif").getImage();
-        gameover  = new ImageIcon("./src/images/gameover.gif").getImage();
     }
 
 
@@ -140,11 +141,9 @@ public class Model extends JPanel implements ActionListener {
     private void playGame(Graphics2D g2d) {
 
         if (dying) {
-
             death();
 
         } else {
-
             movePacman();
             drawPacman(g2d);
             moveGhosts(g2d);
@@ -152,6 +151,7 @@ public class Model extends JPanel implements ActionListener {
         }
     }
 
+    // main menu
     private void showIntroScreen(Graphics2D g2d) {
 
         String start = "Press SPACE to start";
@@ -160,10 +160,12 @@ public class Model extends JPanel implements ActionListener {
         g2d.drawString(start, 100, 250);
     }
 
+    //main menu
     private void drawHome(Graphics2D g2d) {
         g2d.drawImage(home, home_x + 0, home_y + 1, this);
     }
 
+    //score
     private void drawScore(Graphics2D g) {
         g.setFont(smallFont);
         g.setColor(new Color(5, 181, 79));
@@ -191,15 +193,6 @@ public class Model extends JPanel implements ActionListener {
 
         if (finished) {
 
-            score += 50;
-
-            if (N_GHOSTS < MAX_GHOSTS) {
-                N_GHOSTS++;
-            }
-
-            if (currentSpeed < maxSpeed) {
-                currentSpeed++;
-            }
 
             initLevel();
         }
@@ -216,6 +209,7 @@ public class Model extends JPanel implements ActionListener {
         continueLevel();
     }
 
+    //Function of Ghost
     private void moveGhosts(Graphics2D g2d) {
 
         int pos;
@@ -300,26 +294,30 @@ public class Model extends JPanel implements ActionListener {
         if (pacman_x % BLOCK_SIZE == 0 && pacman_y % BLOCK_SIZE == 0) {
             pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
             ch = screenData[pos];
-
+            //score  plus 1
             if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 score++;
             }
+            //score * 2
             else if ((ch & 32) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 score =score*2;
             }
+            //score  *100
             else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 score =score*100;
             }
+            //heart plus 1
             else if ((ch & 128) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 lives ++;
             }
+            //score  - 10
             else if ((ch & 256) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                score =score-100;
+                score =score-10;
             }
 
             if (req_dx != 0 || req_dy != 0) {
@@ -358,6 +356,7 @@ public class Model extends JPanel implements ActionListener {
         }
     }
 
+    // assign number to build a map
     private void drawMaze(Graphics2D g2d) {
 
         short i = 0;
@@ -417,6 +416,7 @@ public class Model extends JPanel implements ActionListener {
         }
     }
 
+    // default before start game
     private void initGame() {
         lives = 3;
         score = 0;
@@ -425,12 +425,15 @@ public class Model extends JPanel implements ActionListener {
         currentSpeed = 3;
     }
 
+    //function random
     public static int generateTicketNumber(int min, int max) {
         int range = (max - min) + 1;
         return (int)(Math.random() * range) + min;
     }
 
+    //map
     private void initLevel() {
+        //random map
         int randomNumber = generateTicketNumber(1, 2);
 
         if(randomNumber == 1){
